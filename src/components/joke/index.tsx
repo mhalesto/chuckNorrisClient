@@ -4,9 +4,15 @@ import { useQuery, gql } from '@apollo/client';
 import IJokeModel from '../../models/joke-model';
 import Moment from 'react-moment';
 import Loading from '../../common-components/loading';
+import { useDispatch, connect } from 'react-redux';
+import { receiveJoke } from '../../store/actions/joke';
+import { bindActionCreators } from 'redux';
+import joke from '../../store/reducers/joke';
+import { withRouter } from 'react-router-dom';
 
 const  Joke = (props: any) => {
   let { category } = props.match.params;
+  const dispatch = useDispatch();
 
   const JOKE = gql`
   query GetJoke {
@@ -21,7 +27,10 @@ const  Joke = (props: any) => {
 `;
 
   const { loading, error, data } = useQuery(JOKE);
-  // const joke: IJokeModel = data.joke;
+
+  React.useEffect(() => {
+    dispatch(receiveJoke(data));
+  }, [dispatch, data]);
 
   if (loading) return <Loading />;
   if (error) return <p>Error :(</p>;
@@ -44,6 +53,14 @@ const  Joke = (props: any) => {
       </div>
     </JokeContainer>
   );
-
 }
-export default Joke
+
+function mapStateToProps() { return {} }
+function mapDispatchToProps(dispatch: any) {
+  return bindActionCreators({ ...joke }, dispatch);
+}
+
+export default withRouter(connect(
+  mapStateToProps,
+  mapDispatchToProps,
+)(Joke))

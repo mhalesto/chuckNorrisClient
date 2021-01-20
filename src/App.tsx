@@ -8,6 +8,7 @@ import { ApolloProvider } from '@apollo/client';
 import { client } from './config/environment/config.env';
 
 export default function App() {
+
   return (
     <ApolloProvider client={client}>
       <Router>
